@@ -82,7 +82,7 @@ impl MakeWriter<'_> for LoggingSettings {
             Self::File(file_settings) => {
                 if file_settings.enable {
                     CustomWriter::RotatingFile(tracing_appender::rolling::RollingFileAppender::new(
-                        (&file_settings.rotation).into(),
+                        file_settings.rotation.clone(),
                         &file_settings.dir,
                         &file_settings.file_prepend,
                     ))
@@ -128,26 +128,24 @@ pub struct FileLoggingSettings {
     pub enable: bool,
     pub dir: PathBuf,
     pub file_prepend: String,
-    pub rotation: RotationWrapper,
+    #[serde(deserialize_with = "rotation_from_string")]
+    pub rotation: Rotation,
 }
 
-#[derive(Deserialize, Clone, Debug)]
-pub struct RotationWrapper(String);
-
-impl From<&RotationWrapper> for Rotation {
-    fn from(val: &RotationWrapper) -> Self {
-        match val.0.to_lowercase().as_ref() {
-            "minutely" => Rotation::MINUTELY,
-            "hourly" => Rotation::HOURLY,
-            "daily" => Rotation::DAILY,
-            "never" => Rotation::NEVER,
-            _ => Rotation::DAILY,
-        }
-    }
-}
-impl From<RotationWrapper> for Rotation {
-    fn from(val: RotationWrapper) -> Self {
-        (&val).into()
+fn rotation_from_string<'de, D>(deserializer: D) -> Result<Rotation, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let s: std::borrow::Cow<String> = Deserialize::deserialize(deserializer)?;
+    match s.as_str() {
+        "minutely" => Ok(Rotation::MINUTELY),
+        "hourly" => Ok(Rotation::HOURLY),
+        "daily" => Ok(Rotation::DAILY),
+        "never" => Ok(Rotation::NEVER),
+        default => Err(serde::de::Error::invalid_value(
+            serde::de::Unexpected::Str(default),
+            &r#""daily" or "hourly" or "daily" or "never""#,
+        )),
     }
 }
 
