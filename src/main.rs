@@ -13,9 +13,11 @@ use tracing_log::log::Level;
 
 #[tokio::main]
 async fn main() {
-    let settings = load_settings().unwrap();
+    let settings = load_settings();
+    print!("{:?}", settings.as_ref().err());
+    let settings = settings.unwrap();
     let telemetry_subscriber =
-        get_subscriber("ticket_app".to_string(), Level::Info, std::io::stdout);
+        get_subscriber("ticket_app".to_string(), Level::Info, settings.logging);
     init_subscriber(telemetry_subscriber);
 
     let app = Router::new()
