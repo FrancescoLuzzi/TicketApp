@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+  redis:
+    image: redis
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
