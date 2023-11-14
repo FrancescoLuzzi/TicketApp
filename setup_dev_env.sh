@@ -10,12 +10,15 @@ REDIS_PORT=6379
 DB_HOST="localhost"
 
 export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+echo "export DATABASE_URL=\"$DATABASE_URL\"" > db_env.sh
+echo "created file db_env.sh, source it to configure \$DATABASE_URL env variable"
+echo "example \". db_env.sh\""
 
 ask_to_close() {
     echo "dev environment already running"
     while true; do
         read -p "Do you want to take it down? (Y/n) " yn
-        case $yn in 
+        case $yn in
             y|Y|"" )
                 docker compose -p $project_name down
                 return 0
@@ -38,14 +41,14 @@ ask_to_close() {
 ask_force_recreate() {
     read -p "Force recreation of the containers? (y/N) " yn
     while true; do
-        case $yn in 
+        case $yn in
             y|Y )
-                docker compose -p $project_name up -d --force-recreate
+                docker compose -p $project_name up -d --force-recreate --wait
                 break 2
                 ;;
 
             n|N|"" )
-                docker compose -p $project_name up -d
+                docker compose -p $project_name up -d --wait
                 break 2
                 ;;
 
@@ -67,7 +70,7 @@ if [ $already_running -eq 1 ]; then
         exit 0
     else
         ask_to_close
-        exit 0 
+        exit 0
     fi
 
     exit 1
