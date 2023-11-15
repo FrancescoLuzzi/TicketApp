@@ -7,7 +7,7 @@ logging:
 database:
   host: "127.0.0.1"
   port: 5432
-  username: "test"
-  password: "test"
-  database_name: "test"
+  username: "user"
+  password: "password"
+  database_name: "ticket_app"
   require_ssl: false

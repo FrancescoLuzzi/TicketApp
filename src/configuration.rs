@@ -11,9 +11,6 @@ use tracing_appender::rolling::Rotation;
 use tracing_subscriber::fmt::MakeWriter;
 
 #[derive(Deserialize, Clone)]
-pub struct AppBaseUrl(pub String);
-
-#[derive(Deserialize, Clone)]
 pub struct Settings {
     pub application: ApplicationSettings,
     pub database: DatabaseSettings,
@@ -22,10 +19,11 @@ pub struct Settings {
 
 #[derive(Deserialize, Clone)]
 pub struct ApplicationSettings {
-    pub base_url: AppBaseUrl,
+    pub base_url: String,
     pub host: IpAddr,
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
+    pub hmac_secret: SecretString,
 }
 
 #[derive(serde::Deserialize, Clone)]
