@@ -278,9 +278,9 @@ dependencies = [
 
 [[package]]
 name = "axum_session"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "214df046e4759306dc748ba9ed42bd14a09d48f3671d18c3aa1d08b57a26c7fd"
+checksum = "606cc66b6c8cb51751636c56d1a3ac326d58af5856d56f1ed4d5ae3a811fb2f1"
 dependencies = [
  "aes-gcm",
  "async-trait",
@@ -288,7 +288,7 @@ dependencies = [
  "base64 0.21.5",
  "bytes",
  "chrono",
- "cookie",
+ "cookie 0.18.0",
  "dashmap",
  "futures",
  "http",
@@ -307,9 +307,9 @@ dependencies = [
 
 [[package]]
 name = "axum_session_auth"
-version = "0.8.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1900f4fddf92b0108ebbbef650b61333208d534294d393af39152305d1b4eac2"
+checksum = "47cb4dd39a004a5a756380ec3fbdd8fbbcb0d1210d02ca4935f7f7904dd43ad7"
 dependencies = [
  "anyhow",
  "async-recursion",
@@ -484,6 +484,17 @@ name = "cookie"
 version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7efb37c3e1ccb1ff97164ad95ac1606e8ccd35b3fa0a7d99a304c7f4a428cc24"
+dependencies = [
+ "percent-encoding",
+ "time",
+ "version_check",
+]
+
+[[package]]
+name = "cookie"
+version = "0.18.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3cd91cf61412820176e137621345ee43b3f4423e589e7ae4e50d601d93e35ef8"
 dependencies = [
  "aes-gcm",
  "base64 0.21.5",
@@ -920,9 +931,9 @@ dependencies = [
 
 [[package]]
 name = "http"
-version = "0.2.9"
+version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bd6effc99afb63425aff9b05836f029929e345a6148a14b7ecd5ab67af944482"
+checksum = "8947b1a6fad4393052c7ba1f4cd97bed3e953a95c79c92ad9b051a04611d9fbb"
 dependencies = [
  "bytes",
  "fnv",
@@ -1696,9 +1707,9 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.190"
+version = "1.0.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91d3c334ca1ee894a2c6f6ad698fe8c435b76d504b13d436f0685d648d6d96f7"
+checksum = "bca2a08484b285dcb282d0f67b26cadc0df8b19f8c12502c13d966bf9482f001"
 dependencies = [
  "serde_derive",
 ]
@@ -1716,9 +1727,9 @@ dependencies = [
 
 [[package]]
 name = "serde_derive"
-version = "1.0.190"
+version = "1.0.192"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67c5609f394e5c2bd7fc51efda478004ea80ef42fee983d5c67a65e34f32c0e3"
+checksum = "d6c7207fbec9faa48073f3e3074cbe553af6ea512d7c21ba46e434e70ea9fbc1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2186,6 +2197,7 @@ dependencies = [
  "axum_session",
  "axum_session_auth",
  "config",
+ "rand",
  "secrecy",
  "serde",
  "serde-aux",
@@ -2249,9 +2261,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.33.0"
+version = "1.34.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f38200e3ef7995e5ef13baec2f432a6da0aa9ac495b2c0e8f3b7eec2c92d653"
+checksum = "d0c014766411e834f7af5b8f4cf46257aab4036ca95e9d2c144a10f59ad6f5b9"
 dependencies = [
  "backtrace",
  "bytes",
@@ -2268,9 +2280,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-macros"
-version = "2.1.0"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "630bdcf245f78637c13ec01ffae6187cca34625e8c63150d424b59e55af2675e"
+checksum = "5b8a1e28f2deaa14e508979454cb3a223b10b938b45af148bc0986de36f1923b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2312,7 +2324,7 @@ checksum = "40f38d941a2ffd8402b36e02ae407637a9caceb693aaf2edc910437db0f36984"
 dependencies = [
  "async-trait",
  "axum-core",
- "cookie",
+ "cookie 0.17.0",
  "futures-util",
  "http",
  "parking_lot",
