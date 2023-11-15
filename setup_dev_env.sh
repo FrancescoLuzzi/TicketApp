@@ -10,9 +10,16 @@ REDIS_PORT=6379
 DB_HOST="localhost"
 
 export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+
+if [ ! -f "./db_env.sh" ];then
+    echo << EOF
+created file "db_env.sh", source it to configure \$DATABASE_URL env variable
+example ". db_env.sh"
+
+EOF
+fi
+
 echo "export DATABASE_URL=\"$DATABASE_URL\"" > db_env.sh
-echo "created file db_env.sh, source it to configure \$DATABASE_URL env variable"
-echo "example \". db_env.sh\""
 
 ask_to_close() {
     echo "dev environment already running"
@@ -44,12 +51,12 @@ ask_force_recreate() {
         case $yn in
             y|Y )
                 docker compose -p $project_name up -d --force-recreate --wait
-                break 2
+                break
                 ;;
 
             n|N|"" )
                 docker compose -p $project_name up -d --wait
-                break 2
+                break
                 ;;
 
             * )
@@ -57,6 +64,7 @@ ask_force_recreate() {
                 ;;
         esac
     done
+    sleep 0.5
     sqlx database create
     sqlx migrate run
 }
