@@ -36,7 +36,7 @@ pub async fn post(
     let hashed_password = hash_password(new_user.password)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    let _ = sqlx::query!(
+    sqlx::query!(
         "INSERT INTO tbl_user (id,username, email,password) VALUES ($1, $2, $3, $4)",
         new_uuid,
         new_user.username,
@@ -44,7 +44,9 @@ pub async fn post(
         hashed_password.expose_secret()
     )
     .execute(transaction.deref_mut())
-    .await;
+    .await
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     transaction
         .commit()
         .await
