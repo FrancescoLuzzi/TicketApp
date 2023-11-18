@@ -32,7 +32,7 @@ ask_to_close() {
                 ;;
 
             n|N )
-                echo exiting...
+                docker compose -p $project_name up -d --wait
                 sqlx database create
                 sqlx migrate run
                 return 0
