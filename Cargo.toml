@@ -15,7 +15,7 @@ name = "ticket_app"
 [dependencies]
 anyhow = "1.0"
 argon2 = { version = "0.5", features = ["std"] }
-askama = "0.12"
+askama = {version = "0.12", features = ["with-axum"]}
 askama_axum = "0.3.0"
 # https://github.com/tokio-rs/axum/blob/main/ECOSYSTEM.md
 axum = "0.6"
