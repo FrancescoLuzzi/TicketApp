@@ -11,6 +11,14 @@
 <body>
     <h1>Ticket App V3</h1>
     <b>Hello World</b>
+    <div hx-ext="client-side-templates">
+        <button hx-get="/login" hx-swap="innerHTML" hx-target="#users_content">
+            Click Me
+        </button>
+
+        <p id="users_content">Start</p>
+
+    </div>
 </body>
 
 </html>
