@@ -45,12 +45,15 @@ pub async fn post(
     )
     .execute(transaction.deref_mut())
     .await
-    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    .map_err(|e| {
+        tracing::error!("Failed new user subscription: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
 
-    transaction
-        .commit()
-        .await
-        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    transaction.commit().await.map_err(|e| {
+        tracing::error!("Failed committing transaction: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
     Ok(StatusCode::OK)
 }
 
