@@ -1,2 +1,3 @@
 /target
 db_env.sh
+node_modules

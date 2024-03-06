@@ -1,0 +1,17 @@
+{
+  "name": "htmx-rust",
+  "version": "1.0.0",
+  "description": "",
+  "main": "none",
+  "scripts": {
+    "tailwind": "npx tailwindcss -i templates/index.css -o dist/index.css --watch",
+    "client": "npx webpack --watch --mode development",
+    "server": "cargo watch -x run -w src"
+  },
+  "keywords": [],
+  "author": "FrancescoLuzzi",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
+  }
+}
