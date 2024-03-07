@@ -2,7 +2,6 @@ use crate::app_state::SharedAppState;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use secrecy::SecretString;
 use std::ops::DerefMut;
 use uuid::Uuid;
 
@@ -11,7 +10,6 @@ use uuid::Uuid;
 struct User {
     id: Uuid,
     username: String,
-    password: SecretString,
     email: String,
 }
 

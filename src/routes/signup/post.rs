@@ -32,13 +32,11 @@ pub async fn post(
         .begin()
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    let new_uuid = Uuid::new_v4();
     let hashed_password = hash_password(new_user.password)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
     sqlx::query!(
-        "INSERT INTO tbl_user (id,username, email,password) VALUES ($1, $2, $3, $4)",
-        new_uuid,
+        "INSERT INTO tbl_user (username, email, password) VALUES ($1, $2, $3, $4)",
         new_user.username,
         new_user.email,
         hashed_password.expose_secret()
