@@ -10,9 +10,11 @@ use ticket_app::routes::health_check;
 use ticket_app::telemetry::{get_subscriber, init_subscriber};
 use ticket_app::{
     app_state::AppState,
+    routes::validate,
     routes::{login, signup},
 };
 use ticket_app::{configuration::load_settings, routes::index};
+use tower_http::services::ServeDir;
 use tracing_log::log::Level;
 
 #[tokio::main]
@@ -28,17 +30,25 @@ async fn main() {
         hmac_secret: settings.application.hmac_secret,
         base_url: settings.application.base_url,
     });
+    let serve_dir = ServeDir::new("dist");
 
     let app = Router::new()
         .route("/", get(index))
         .route("/health_check", get(health_check))
         .route("/signup", post(signup::post))
+        .route("/signup", get(signup::get))
         .route("/login", get(login::get))
+        .route("/validation/username", post(validate::username::post))
+        .nest_service("/dist", serve_dir)
         .with_state(app_state);
+
     let addr = SocketAddr::new(settings.application.host, settings.application.port);
+    let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
     tracing::info!("listening on {}", addr);
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
-        .await
-        .unwrap()
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await
+    .unwrap()
 }

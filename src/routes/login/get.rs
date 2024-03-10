@@ -3,12 +3,10 @@ use axum::extract::State;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use std::ops::DerefMut;
-use uuid::Uuid;
 
 #[derive(sqlx::FromRow, askama::Template)]
 #[template(path = "user_read.html")]
 struct User {
-    id: Uuid,
     username: String,
     email: String,
 }
@@ -37,7 +35,7 @@ pub async fn get(State(state): State<SharedAppState>) -> Result<impl IntoRespons
         .begin()
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    let users = sqlx::query_as!(User, "SELECT * FROM tbl_user")
+    let users = sqlx::query_as!(User, "SELECT username,email FROM tbl_user")
         .fetch_all(transaction.deref_mut())
         .await
         .map_err(|_| StatusCode::NOT_FOUND)?;

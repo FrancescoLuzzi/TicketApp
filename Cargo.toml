@@ -1,7 +1,7 @@
 [package]
 name = "ticket_app"
 version = "0.1.0"
-autors = ["Francesco Luzzi fluzzi3@gmail.com"]
+authors = ["Francesco Luzzi fluzzi3@gmail.com"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -16,14 +16,14 @@ name = "ticket_app"
 anyhow = "1.0"
 argon2 = { version = "0.5", features = ["std"] }
 askama = {version = "0.12", features = ["with-axum"]}
-askama_axum = "0.3.0"
+askama_axum = "0.4.0"
 # https://github.com/tokio-rs/axum/blob/main/ECOSYSTEM.md
-axum = "0.6"
-axum-auth = "0.4"
-axum-extra = "0.8"
-axum_session = { version = "0.9.0", features = [ "postgres-rustls"] }
-axum_session_auth = { version = "0.9.0", features = [ "postgres-rustls" ] }
-config = { version = "0.13.3", default-features = false, features = ["yaml"] }
+axum = "0.7"
+axum-login = "0.14"
+axum-extra = { version = "0.9" }
+axum_session = { version = "0.12.0", features = [ "postgres-rustls"] }
+axum_session_auth = { version = "0.12.0", features = [ "postgres-rustls" ] }
+config = { version = "0.14", default-features = false, features = ["yaml"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 uuid = { version = "1", features = ["v4", "serde"] }
 rand = "0.8.5"
@@ -33,10 +33,11 @@ serde-aux = "4"
 serde_json = "1"
 sqlx = { version = "0.7", default-features = false, features = ["runtime-tokio-rustls", "macros", "postgres", "uuid", "chrono", "migrate"] }
 thiserror = "1.0.50"
-tower-cookies = "0.9"
+tower-cookies = "0.10"
+tower-http = { version = "0.5.0", features = ["fs", "trace"] }
 tracing = "0.1"
 tracing-appender = "0.2.2"
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
 tracing-bunyan-formatter = "0.3"
 tracing-log = "0.2"
-validator = { version = "0.16", features = ["derive"] }
+validator = { version = "0.17", features = ["derive"] }

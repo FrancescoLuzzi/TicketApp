@@ -1,5 +1,5 @@
 module.exports = {
-  content: ["templates/**.html"],
+  content: ["templates/**/*.html", "./node_modules/flowbite/**/*.js"],
   darkMode: "class",
   theme: {
     extend: {
@@ -56,5 +56,5 @@ module.exports = {
       ],
     },
   },
-  plugins: [],
+  plugins: [require("flowbite/plugin")],
 };
