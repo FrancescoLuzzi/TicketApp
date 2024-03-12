@@ -1,5 +1,5 @@
 use crate::app_state::SharedAppState;
-use crate::templates::validation::username::UsernameValidation;
+use crate::templates::validation::form::FormValidation;
 use axum::extract::State;
 use axum::http::StatusCode;
 use axum::Form;
@@ -12,7 +12,7 @@ pub struct UserReq {
 pub async fn post(
     State(state): State<SharedAppState>,
     Form(user_req): Form<UserReq>,
-) -> Result<UsernameValidation, StatusCode> {
+) -> Result<FormValidation<'static>, StatusCode> {
     let result = sqlx::query!(
         "SELECT id FROM tbl_user WHERE username = $1",
         user_req.username
@@ -24,7 +24,10 @@ pub async fn post(
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
 
-    Ok(UsernameValidation {
-        is_valid: !result.is_some(),
+    Ok(FormValidation {
+        target: "username-error",
+        valid_message: "valid username",
+        invalid_message: "already used",
+        is_valid: result.is_none(),
     })
 }
