@@ -6,14 +6,16 @@ use anyhow::Context;
 use askama_axum::into_response;
 use askama_axum::{IntoResponse, Response};
 use axum::extract::State;
-use axum::http::StatusCode;
+use axum::http::{HeaderMap, StatusCode};
 use axum::Form;
 use secrecy::{ExposeSecret, SecretString};
 use std::ops::DerefMut as _;
+use validator::Validate;
 
-#[derive(serde::Deserialize)]
+#[derive(Debug, Validate, serde::Deserialize)]
 pub struct NewUser {
     username: String,
+    #[validate(email)]
     email: String,
     password: SecretString,
     #[serde(rename = "password-confirm")]
@@ -33,7 +35,10 @@ pub async fn post(
     Form(new_user): Form<NewUser>,
 ) -> Result<Response, StatusCode> {
     if new_user.password.expose_secret() != new_user.password_confirm.expose_secret() {
-        return Ok((StatusCode::OK, "password confirm error").into_response());
+        return Ok((StatusCode::BAD_REQUEST, "password confirm error").into_response());
+    }
+    if new_user.validate().is_err() {
+        return Ok((StatusCode::BAD_REQUEST, "invalid email").into_response());
     }
     if !is_password_strong(&new_user.password) {
         return Ok(into_response(&PasswordValidation {}));
@@ -63,7 +68,9 @@ pub async fn post(
         tracing::error!("Failed committing transaction: {}", e);
         StatusCode::INTERNAL_SERVER_ERROR
     })?;
-    Ok(StatusCode::OK.into_response())
+    let mut headers = HeaderMap::new();
+    headers.append("HX-Redirect", "/login".parse().unwrap());
+    Ok((headers, StatusCode::NO_CONTENT).into_response())
 }
 
 async fn hash_password(password: SecretString) -> Result<SecretString, anyhow::Error> {
