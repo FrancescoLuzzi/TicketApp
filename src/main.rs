@@ -39,6 +39,7 @@ async fn main() {
         .route("/signup", get(signup::get))
         .route("/login", get(login::get))
         .route("/validation/username", post(validate::username::post))
+        .route("/validation/email", post(validate::email::post))
         .nest_service("/dist", serve_dir)
         .with_state(app_state);
 
