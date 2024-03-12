@@ -1,7 +1,9 @@
 use std::{net::SocketAddr, sync::Arc};
 
+use askama_axum::IntoResponse;
 use axum::{
     self,
+    response::Response,
     routing::{get, post},
     Router,
 };
@@ -16,6 +18,10 @@ use ticket_app::{
 use ticket_app::{configuration::load_settings, routes::index};
 use tower_http::services::ServeDir;
 use tracing_log::log::Level;
+
+async fn favicon() -> Response {
+    include_bytes!("../favicon.ico").into_response()
+}
 
 #[tokio::main]
 async fn main() {
@@ -34,6 +40,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(index))
+        .route("/favicon.ico", get(favicon))
         .route("/health_check", get(health_check))
         .route("/signup", post(signup::post))
         .route("/signup", get(signup::get))
