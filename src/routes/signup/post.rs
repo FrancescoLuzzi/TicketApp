@@ -1,8 +1,6 @@
-use crate::auth::password::compute_password_hash;
-use crate::telemetry::spawn_blocking_with_tracing;
+use crate::app_state::SharedAppState;
+use crate::auth::password::{hash_password, is_password_strong};
 use crate::templates::validation::password::PasswordValidation;
-use crate::{app_state::SharedAppState, auth::password::is_password_strong};
-use anyhow::Context;
 use askama_axum::into_response;
 use askama_axum::{IntoResponse, Response};
 use axum::extract::State;
@@ -71,10 +69,4 @@ pub async fn post(
     let mut headers = HeaderMap::new();
     headers.append("HX-Redirect", "/login".parse().unwrap());
     Ok((headers, StatusCode::NO_CONTENT).into_response())
-}
-
-async fn hash_password(password: SecretString) -> Result<SecretString, anyhow::Error> {
-    spawn_blocking_with_tracing(move || compute_password_hash(password))
-        .await?
-        .context("Failed to hash password")
 }
