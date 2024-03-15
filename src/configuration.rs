@@ -1,7 +1,7 @@
+use bb8_redis::redis;
 use config::{Config, ConfigError, File};
 use secrecy::{ExposeSecret, SecretString};
 use serde::Deserialize;
-use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::postgres::{PgConnectOptions, PgSslMode};
 use std::convert::TryFrom;
 use std::io::Write;
@@ -14,6 +14,7 @@ use tracing_subscriber::fmt::MakeWriter;
 pub struct Settings {
     pub application: ApplicationSettings,
     pub database: DatabaseSettings,
+    pub redis: RedisSettings,
     pub logging: LoggingSettings,
 }
 
@@ -21,7 +22,6 @@ pub struct Settings {
 pub struct ApplicationSettings {
     pub base_url: String,
     pub host: IpAddr,
-    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub hmac_secret: SecretString,
 }
@@ -30,7 +30,6 @@ pub struct ApplicationSettings {
 pub struct DatabaseSettings {
     pub username: String,
     pub password: SecretString,
-    #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub host: IpAddr,
     pub database_name: String,
@@ -54,6 +53,28 @@ impl DatabaseSettings {
 
     pub fn with_db(&self) -> PgConnectOptions {
         self.without_db().database(&self.database_name)
+    }
+}
+
+#[derive(serde::Deserialize, Clone)]
+pub struct RedisSettings {
+    pub username: Option<String>,
+    pub password: Option<SecretString>,
+    pub port: u16,
+    pub host: IpAddr,
+    pub database_number: Option<i64>,
+}
+
+impl RedisSettings {
+    pub fn with_db(&self) -> redis::ConnectionInfo {
+        redis::ConnectionInfo {
+            addr: redis::ConnectionAddr::Tcp(self.host.to_string(), self.port),
+            redis: redis::RedisConnectionInfo {
+                db: self.database_number.unwrap_or(0),
+                username: self.username.clone(),
+                password: self.password.as_ref().map(|x| x.expose_secret().to_owned()),
+            },
+        }
     }
 }
 

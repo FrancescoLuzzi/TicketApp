@@ -7,6 +7,8 @@ use axum::{
     routing::{get, post},
     Router,
 };
+use bb8_redis::bb8;
+use bb8_redis::RedisConnectionManager;
 use sqlx::postgres::PgPoolOptions;
 use ticket_app::routes::health_check;
 use ticket_app::telemetry::{get_subscriber, init_subscriber};
@@ -30,8 +32,15 @@ async fn main() {
     let telemetry_subscriber =
         get_subscriber("ticket_app".to_string(), Level::Info, settings.logging);
     init_subscriber(telemetry_subscriber);
+    let redis_manager = RedisConnectionManager::new(settings.redis.with_db()).unwrap();
+    let redis_pool = bb8::Pool::builder()
+        .min_idle(3)
+        .build(redis_manager)
+        .await
+        .unwrap();
     let db_pool = PgPoolOptions::new().connect_lazy_with(settings.database.with_db());
     let app_state = Arc::new(AppState {
+        redis_pool,
         db_pool,
         hmac_secret: settings.application.hmac_secret,
         base_url: settings.application.base_url,
@@ -45,6 +54,7 @@ async fn main() {
         .route("/signup", post(signup::post))
         .route("/signup", get(signup::get))
         .route("/login", get(login::get))
+        .route("/login", post(login::post))
         .route("/validation/username", post(validate::username::post))
         .route("/validation/email", post(validate::email::post))
         .nest_service("/dist", serve_dir)

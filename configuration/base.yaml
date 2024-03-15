@@ -11,3 +11,10 @@ database:
   password: "password"
   database_name: "ticket_app"
   require_ssl: false
+redis:
+  # username: user
+  # password: password
+  port: 6379
+  host: "127.0.0.1"
+  # database_number: 0
+

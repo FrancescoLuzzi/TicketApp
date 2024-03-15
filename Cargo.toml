@@ -19,10 +19,8 @@ askama = {version = "0.12", features = ["with-axum"]}
 askama_axum = "0.4.0"
 # https://github.com/tokio-rs/axum/blob/main/ECOSYSTEM.md
 axum = "0.7"
-axum-login = "0.14"
 axum-extra = { version = "0.9" }
-axum_session = { version = "0.13.0", features = [ "postgres-rustls"] }
-axum_session_auth = { version = "0.13.0", features = [ "postgres-rustls" ] }
+bb8-redis = "0.15"
 config = { version = "0.14", default-features = false, features = ["yaml"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 uuid = { version = "1", features = ["v4", "serde"] }
