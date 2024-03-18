@@ -48,13 +48,13 @@ async fn main() {
     let serve_dir = ServeDir::new("dist");
 
     let app = Router::new()
+        .route("/login", get(login::get))
+        .route("/login", post(login::post))
         .route("/", get(index))
         .route("/favicon.ico", get(favicon))
         .route("/health_check", get(health_check))
         .route("/signup", post(signup::post))
         .route("/signup", get(signup::get))
-        .route("/login", get(login::get))
-        .route("/login", post(login::post))
         .route("/validation/username", post(validate::username::post))
         .route("/validation/email", post(validate::email::post))
         .nest_service("/dist", serve_dir)

@@ -22,9 +22,12 @@ axum = "0.7"
 axum-extra = { version = "0.9" }
 bb8-redis = "0.15"
 config = { version = "0.14", default-features = false, features = ["yaml"] }
+derive_more = "0.99"
+hmac = "0.12"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 uuid = { version = "1", features = ["v4", "serde"] }
 rand = "0.8.5"
+redis = { version = "0.25.0" ,features = ["uuid"]}
 secrecy = { version = "0.8", features = ["serde"] }
 serde = "1.0.190"
 serde-aux = "4"
