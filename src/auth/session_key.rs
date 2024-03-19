@@ -1,6 +1,6 @@
+use bb8_redis::redis::{self, ToRedisArgs};
 use derive_more::{Display, From};
 use rand::{distributions::Alphanumeric, rngs::OsRng, Rng as _};
-use redis::ToRedisArgs;
 
 /// https://github.com/actix/actix-extras/blob/master/actix-session/src/storage
 /// A session key, the string stored in a client-side cookie to associate a user with its session
@@ -12,10 +12,10 @@ use redis::ToRedisArgs;
 #[derive(Debug, PartialEq, Eq)]
 pub struct SessionKey(String);
 
-impl TryFrom<String> for SessionKey {
+impl TryFrom<&str> for SessionKey {
     type Error = InvalidSessionKeyError;
 
-    fn try_from(val: String) -> Result<Self, Self::Error> {
+    fn try_from(val: &str) -> Result<Self, Self::Error> {
         if val.len() > 4064 {
             return Err(anyhow::anyhow!(
                 "The session key is bigger than 4064 bytes, the upper limit on cookie content."
@@ -23,7 +23,15 @@ impl TryFrom<String> for SessionKey {
             .into());
         }
 
-        Ok(SessionKey(val))
+        Ok(SessionKey(val.to_owned()))
+    }
+}
+
+impl TryFrom<String> for SessionKey {
+    type Error = InvalidSessionKeyError;
+
+    fn try_from(val: String) -> Result<Self, Self::Error> {
+        val.as_str().try_into()
     }
 }
 

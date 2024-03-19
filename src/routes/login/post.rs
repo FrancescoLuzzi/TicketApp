@@ -1,19 +1,24 @@
-use crate::app_state::SharedAppState;
-use crate::auth::mw_auth::{CtxResult, AUTH_COOKIE};
-use crate::auth::password::{validate_credentials, Credentials};
-use crate::auth::session_key::generate_session_key;
+use crate::{
+    app_state::SharedAppState,
+    auth::{
+        mw_auth::{CtxResult, AUTH_COOKIE},
+        password::{validate_credentials, Credentials},
+        session_key::generate_session_key,
+    },
+};
 use askama_axum::IntoResponse;
-use axum::extract::State;
-use axum::http::StatusCode;
-use axum::response::{Redirect, Response};
-use axum::Form;
-use bb8_redis::redis::{AsyncCommands, SetExpiry, SetOptions};
-use redis::ExistenceCheck;
+use axum::{
+    extract::{Extension, State},
+    http::StatusCode,
+    response::{Redirect, Response},
+    Form,
+};
+use bb8_redis::redis::{AsyncCommands, ExistenceCheck, SetExpiry, SetOptions};
 use tower_cookies::{Cookie, Cookies};
 
 pub async fn post(
     State(state): State<SharedAppState>,
-    ctx_res: CtxResult,
+    ctx_res: Extension<CtxResult>,
     cookies: Cookies,
     Form(credentials): Form<Credentials>,
 ) -> Response {

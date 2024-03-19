@@ -2,7 +2,7 @@ use std::{net::SocketAddr, sync::Arc};
 
 use askama_axum::IntoResponse;
 use axum::{
-    self,
+    self, middleware,
     response::Response,
     routing::{get, post},
     Router,
@@ -10,14 +10,14 @@ use axum::{
 use bb8_redis::bb8;
 use bb8_redis::RedisConnectionManager;
 use sqlx::postgres::PgPoolOptions;
-use ticket_app::routes::health_check;
-use ticket_app::telemetry::{get_subscriber, init_subscriber};
 use ticket_app::{
     app_state::AppState,
-    routes::validate,
-    routes::{login, signup},
+    auth::mw_auth,
+    configuration::load_settings,
+    routes::{health_check, index, login, signup, validate},
+    telemetry::{get_subscriber, init_subscriber},
 };
-use ticket_app::{configuration::load_settings, routes::index};
+use tower_cookies::CookieManagerLayer;
 use tower_http::services::ServeDir;
 use tracing_log::log::Level;
 
@@ -50,6 +50,10 @@ async fn main() {
     let app = Router::new()
         .route("/login", get(login::get))
         .route("/login", post(login::post))
+        .layer(middleware::from_fn_with_state(
+            app_state.clone(),
+            mw_auth::mw_ctx_resolver,
+        ))
         .route("/", get(index))
         .route("/favicon.ico", get(favicon))
         .route("/health_check", get(health_check))
@@ -57,6 +61,7 @@ async fn main() {
         .route("/signup", get(signup::get))
         .route("/validation/username", post(validate::username::post))
         .route("/validation/email", post(validate::email::post))
+        .layer(CookieManagerLayer::new())
         .nest_service("/dist", serve_dir)
         .with_state(app_state);
 
