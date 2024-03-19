@@ -6,7 +6,7 @@ use axum::{
     response::Response,
 };
 use bb8_redis::redis::AsyncCommands;
-use tower_cookies::{Cookie, Cookies};
+use tower_cookies::{cookie::time::Duration, Cookie, Cookies};
 use uuid::Uuid;
 
 use super::session_key::SessionKey;
@@ -35,7 +35,6 @@ pub async fn mw_ctx_resolver(
     dbg!("{:<12} - mw_ctx_resolve", "MIDDLEWARE");
 
     let ctx_ext_result = ctx_resolve(state, &cookies).await;
-
     if ctx_ext_result.is_err() && !matches!(ctx_ext_result, Err(CtxExtError::TokenNotInCookie)) {
         cookies.remove(Cookie::from(AUTH_COOKIE))
     }
@@ -53,14 +52,18 @@ async fn ctx_resolve(state: SharedAppState, cookies: &Cookies) -> CtxResult {
         .get()
         .await
         .map_err(|_| CtxExtError::SessionAccessError)?;
-    let session_id: SessionKey = cookies
+    let session_key: SessionKey = cookies
         .get(AUTH_COOKIE)
         .ok_or(CtxExtError::TokenNotInCookie)?
         .value()
         .try_into()
         .map_err(|_| CtxExtError::TokenMalformed)?;
+    let mut auth_cookie = Cookie::new(AUTH_COOKIE, session_key.as_ref().to_string());
+    auth_cookie.set_max_age(Duration::seconds(10));
+    auth_cookie.set_http_only(true);
+    cookies.add(auth_cookie);
     let user_id: Uuid = conn
-        .get_ex(session_id, redis::Expiry::EX(10))
+        .get_ex(session_key, redis::Expiry::EX(10))
         .await
         .map_err(|_| CtxExtError::SessionNotFound)?;
     Ctx::new(user_id).map_err(|_| CtxExtError::CtxCreateFail(user_id.to_string()))

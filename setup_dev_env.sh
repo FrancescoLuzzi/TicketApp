@@ -64,7 +64,7 @@ ask_force_recreate() {
                 ;;
         esac
     done
-    sleep 0.5
+    sleep 1
     sqlx database create
     sqlx migrate run
 }

@@ -1,3 +1,5 @@
+use tower_cookies::cookie::time::Duration;
+
 use crate::{
     app_state::SharedAppState,
     auth::{
@@ -35,7 +37,10 @@ pub async fn post(
             // add session in redis
             let session_key = generate_session_key();
             let _: () = conn.set_options(&session_key, user_id, opts).await.unwrap();
-            cookies.add(Cookie::new(AUTH_COOKIE, session_key.as_ref().to_string()));
+            let mut auth_cookie = Cookie::new(AUTH_COOKIE, session_key.as_ref().to_string());
+            auth_cookie.set_max_age(Duration::seconds(10));
+            auth_cookie.set_http_only(true);
+            cookies.add(auth_cookie);
             Redirect::to("/home").into_response()
         }
         Err(_) => (StatusCode::BAD_REQUEST, Redirect::to("/login")).into_response(),
