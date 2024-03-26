@@ -1344,6 +1344,10 @@ input:checked + .toggle-bg {
   resize: both;
 }
 
+.snap-align-none {
+  scroll-snap-align: none;
+}
+
 .list-disc {
   list-style-type: disc;
 }
