@@ -1,13 +1,9 @@
 {
-    "connections": [
-        {
-            "name": "postgres-project",
-            "adapter": "postgres",
-            "host": "localhost",
-            "port": 5432,
-            "user": "postgres",
-            "password": "pg_pass",
-            "database": "pg_test"
-        }
-    ]
+    "name": "ticket_app",
+    "adapter": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "user": "user",
+    "password": "password",
+    "database": "ticket_app"
 }
