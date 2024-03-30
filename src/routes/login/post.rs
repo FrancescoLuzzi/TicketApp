@@ -8,11 +8,10 @@ use crate::{
         session_key::generate_session_key,
     },
 };
-use askama_axum::IntoResponse;
 use axum::{
     extract::{Extension, State},
-    http::StatusCode,
-    response::{Redirect, Response},
+    http::{HeaderMap, StatusCode},
+    response::{IntoResponse, Response},
     Form,
 };
 use bb8_redis::redis::{AsyncCommands, ExistenceCheck, SetExpiry, SetOptions};
@@ -25,7 +24,7 @@ pub async fn post(
     Form(credentials): Form<Credentials>,
 ) -> Response {
     if ctx_res.is_ok() {
-        return Redirect::to("/home").into_response();
+        return StatusCode::OK.into_response();
     }
     match validate_credentials(credentials, &state.db_pool).await {
         Ok(user_id) => {
@@ -41,8 +40,10 @@ pub async fn post(
             auth_cookie.set_max_age(Duration::seconds(10));
             auth_cookie.set_http_only(true);
             cookies.add(auth_cookie);
-            Redirect::to("/home").into_response()
+            let mut headers = HeaderMap::new();
+            headers.append("HX-Redirect", "/home".parse().unwrap());
+            (headers, StatusCode::OK).into_response()
         }
-        Err(_) => (StatusCode::BAD_REQUEST, Redirect::to("/login")).into_response(),
+        Err(_) => StatusCode::BAD_REQUEST.into_response(),
     }
 }

@@ -14,7 +14,7 @@ use ticket_app::{
     app_state::AppState,
     auth::mw_auth,
     configuration::load_settings,
-    routes::{health_check, index, login, signup, validate},
+    routes::{health_check, home, index, login, logout, signup, validate},
     telemetry::{get_subscriber, init_subscriber},
 };
 use tower_cookies::CookieManagerLayer;
@@ -48,8 +48,12 @@ async fn main() {
     let serve_dir = ServeDir::new("dist");
 
     let app = Router::new()
+        .route("/home", get(home::get))
+        .route("/logout", post(logout::post))
         .route("/login", get(login::get))
         .route("/login", post(login::post))
+        .route("/signup", post(signup::post))
+        .route("/signup", get(signup::get))
         .layer(middleware::from_fn_with_state(
             app_state.clone(),
             mw_auth::mw_ctx_resolver,
@@ -57,8 +61,6 @@ async fn main() {
         .route("/", get(index))
         .route("/favicon.ico", get(favicon))
         .route("/health_check", get(health_check))
-        .route("/signup", post(signup::post))
-        .route("/signup", get(signup::get))
         .route("/validation/username", post(validate::username::post))
         .route("/validation/email", post(validate::email::post))
         .layer(CookieManagerLayer::new())

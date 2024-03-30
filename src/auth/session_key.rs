@@ -9,7 +9,7 @@ use rand::{distributions::Alphanumeric, rngs::OsRng, Rng as _};
 /// # Validation
 /// Session keys are stored as cookies, therefore they cannot be arbitrary long. Session keys are
 /// required to be smaller than 4064 bytes.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct SessionKey(String);
 
 impl TryFrom<&str> for SessionKey {

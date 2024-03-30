@@ -2,8 +2,10 @@ use crate::{app_state::SharedAppState, ctx::Ctx};
 use axum::{
     body::Body,
     extract::{Request, State},
+    http::StatusCode,
     middleware::Next,
-    response::Response,
+    response::{IntoResponse, Response},
+    Extension,
 };
 use bb8_redis::redis::AsyncCommands;
 use tower_cookies::{cookie::time::Duration, Cookie, Cookies};
@@ -15,13 +17,13 @@ pub type CtxResult = Result<Ctx, CtxExtError>;
 pub const AUTH_COOKIE: &str = "x-session";
 
 pub async fn mw_ctx_require(
-    ctx: CtxResult,
+    Extension(ctx_res): Extension<CtxResult>,
     req: Request<Body>,
     next: Next,
 ) -> Result<Response, CtxExtError> {
     dbg!("{:<12} - mw_ctx_require - {ctx:?}", "MIDDLEWARE");
 
-    ctx?;
+    ctx_res?;
 
     Ok(next.run(req).await)
 }
@@ -63,10 +65,10 @@ async fn ctx_resolve(state: SharedAppState, cookies: &Cookies) -> CtxResult {
     auth_cookie.set_http_only(true);
     cookies.add(auth_cookie);
     let user_id: Uuid = conn
-        .get_ex(session_key, redis::Expiry::EX(10))
+        .get_ex(&session_key, redis::Expiry::EX(10))
         .await
         .map_err(|_| CtxExtError::SessionNotFound)?;
-    Ctx::new(user_id).map_err(|_| CtxExtError::CtxCreateFail(user_id.to_string()))
+    Ctx::new(user_id, session_key).map_err(|_| CtxExtError::CtxCreateFail(user_id.to_string()))
 }
 
 #[derive(Clone, Debug)]
@@ -79,4 +81,17 @@ pub enum CtxExtError {
 
     CtxNotInRequestExt,
     CtxCreateFail(String),
+}
+impl IntoResponse for CtxExtError {
+    fn into_response(self) -> Response {
+        tracing::error!("{:<12} - model::Error {self:?}", "INTO_RES");
+
+        // Create a placeholder Axum reponse.
+        let mut response = StatusCode::INTERNAL_SERVER_ERROR.into_response();
+
+        // Insert the Error into the reponse.
+        response.extensions_mut().insert(self);
+
+        response
+    }
 }

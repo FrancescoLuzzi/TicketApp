@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}
+Signup
+{% endblock title %}
+
+{% block sign_in %}
+{% if user.is_some()%}
+<button id="user-option" data-dropdown-toggle="dropdownNavbar"
+    class="text-gray-500 dark:text-gray-400 font-semibold hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+        <path fill-rule="evenodd"
+            d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z"
+            clip-rule="evenodd" />
+    </svg>
+</button>
+<!-- Dropdown menu -->
+<div id="dropdownNavbar"
+    class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+    <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
+        <li>
+            <a href="/change_password"
+                class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Change
+                password</a>
+        </li>
+    </ul>
+    <div class="py-1">
+        <button hx-post="/logout"
+            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 w-max dark:hover:text-white">
+            Logout
+        </button>
+    </div>
+</div>
+{%else%}
+{% call super() %}
+{% endif %}
+{% endblock sign_in %}
+
+{% block body %}
+<section class="relative">
+    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto">
+        <a href="/" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+            <img class="w-8 h-8 mr-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/logo.svg" alt="logo">
+            TicketApp
+        </a>
+        My Home
+    </div>
+</section>
+{% endblock body %}

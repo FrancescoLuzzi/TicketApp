@@ -1,11 +1,12 @@
 use crate::app_state::SharedAppState;
 use crate::auth::password::{hash_password, is_password_strong};
 use crate::templates::validation::password::PasswordValidation;
-use askama_axum::into_response;
 use askama_axum::{IntoResponse, Response};
-use axum::extract::State;
-use axum::http::{HeaderMap, StatusCode};
-use axum::Form;
+use axum::{
+    extract::State,
+    http::{HeaderMap, StatusCode},
+    Form,
+};
 use secrecy::{ExposeSecret, SecretString};
 use std::ops::DerefMut as _;
 use validator::Validate;
@@ -39,7 +40,7 @@ pub async fn post(
         return Ok((StatusCode::BAD_REQUEST, "invalid email").into_response());
     }
     if !is_password_strong(&new_user.password) {
-        return Ok(into_response(&PasswordValidation {}));
+        return Ok((PasswordValidation {}).into_response());
     }
     let mut transaction = state
         .db_pool
@@ -68,5 +69,5 @@ pub async fn post(
     })?;
     let mut headers = HeaderMap::new();
     headers.append("HX-Redirect", "/login".parse().unwrap());
-    Ok((headers, StatusCode::NO_CONTENT).into_response())
+    Ok((headers, StatusCode::OK).into_response())
 }
