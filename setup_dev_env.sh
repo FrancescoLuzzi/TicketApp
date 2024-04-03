@@ -5,7 +5,7 @@ POSTGRES_USER="user"
 POSTGRES_PASSWORD="password"
 POSTGRES_DB="ticket_app"
 POSTGRES_PORT=5432
-REDIS_PORT=6379
+CACHE_PORT=6379
 
 DB_HOST="localhost"
 
@@ -73,7 +73,7 @@ already_running=$(docker compose ls --filter name="$project_name" | wc -l)
 ((already_running--))
 
 if [ $already_running -eq 1 ]; then
-    if [[ $1 = "exec" && ( $2 = "redis" || $2 = "db" ) ]];then
+    if [[ $1 = "exec" && ( $2 = "cache" || $2 = "db" ) ]];then
         docker exec -it "${project_name}-${2}-1" bash
         exit 0
     else

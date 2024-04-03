@@ -10,7 +10,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-db}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
-  redis:
+  cache:
     image: redis
+    # image: docker.dragonflydb.io/dragonflydb/dragonfly
+    # image: eqalpha/keydb
     ports:
       - "${REDIS_PORT:-6379}:6379"
