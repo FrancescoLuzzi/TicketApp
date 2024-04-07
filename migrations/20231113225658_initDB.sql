@@ -15,10 +15,10 @@ CREATE TABLE tbl_accounting (
 
 CREATE TABLE tbl_type (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    parent_type UUID,
+    parent_id UUID,
     name TEXT NOT NULL,
     user_id uuid,
-    FOREIGN KEY(parent_type) REFERENCES tbl_type(id),
+    FOREIGN KEY(parent_id) REFERENCES tbl_type(id),
     FOREIGN KEY(user_id) REFERENCES tbl_user(id)
 );
 
