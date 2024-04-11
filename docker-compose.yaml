@@ -12,6 +12,7 @@ services:
       - "${POSTGRES_PORT:-5432}:5432"
   cache:
     image: redis
+    restart: always
     # image: docker.dragonflydb.io/dragonflydb/dragonfly
     # image: eqalpha/keydb
     ports:
