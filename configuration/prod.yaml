@@ -1,4 +1,5 @@
 logging:
+  dest: file
   dir: /var/log/ticket_app
   file_prepend: ticket_app.log
   rotation: daily

@@ -79,9 +79,8 @@ impl RedisSettings {
 }
 
 #[derive(serde::Deserialize, Clone, Debug)]
-#[serde(untagged)]
+#[serde(tag = "dest", rename_all = "lowercase")]
 pub enum LoggingSettings {
-    /// Ordering of the enums matters since serde tries to desirialize top to bottom
     File(FileLoggingSettings),
     Stdout(StdoutLoggingSettings),
 }
