@@ -33,6 +33,7 @@ ask_to_close() {
 
             n|N )
                 docker compose -p $project_name up -d --wait
+                sleep 1
                 sqlx database create
                 sqlx migrate run
                 return 0

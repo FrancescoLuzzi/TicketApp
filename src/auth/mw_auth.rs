@@ -4,7 +4,7 @@ use axum::{
     extract::{Request, State},
     http::StatusCode,
     middleware::Next,
-    response::{IntoResponse, Response},
+    response::{IntoResponse, Redirect, Response},
     Extension,
 };
 use bb8_redis::redis::AsyncCommands;

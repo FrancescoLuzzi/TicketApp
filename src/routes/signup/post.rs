@@ -21,6 +21,11 @@ pub struct NewUser {
     password_confirm: SecretString,
 }
 
+#[derive(Debug, sqlx::FromRow)]
+pub struct NewUserUuid {
+    id: uuid::Uuid,
+}
+
 #[tracing::instrument(
     name = "new user subscribe",
     skip_all,
@@ -50,11 +55,24 @@ pub async fn post(
     let hashed_password = hash_password(new_user.password)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-    sqlx::query!(
-        "INSERT INTO tbl_user (username, email, password) VALUES ($1, $2, $3)",
+
+    let new_user_uuid = sqlx::query_as!(
+        NewUserUuid,
+        r#"INSERT INTO tbl_user (username, email, password) VALUES ($1, $2, $3) RETURNING id"#,
         new_user.username,
         new_user.email,
         hashed_password.expose_secret()
+    )
+    .fetch_one(transaction.deref_mut())
+    .await
+    .map_err(|e| {
+        tracing::error!("Failed new user subscription: {}", e);
+        StatusCode::INTERNAL_SERVER_ERROR
+    })?;
+
+    sqlx::query!(
+        "INSERT INTO tbl_accounting (name, user_id, description) VALUES ('default', $1, 'your first tbl_accounting')",
+        new_user_uuid.id,
     )
     .execute(transaction.deref_mut())
     .await

@@ -2,4 +2,4 @@ use askama::Template;
 
 #[derive(Template)]
 #[template(path = "signup.html")]
-pub struct Signup {}
+pub struct SignupPage {}
