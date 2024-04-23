@@ -23,9 +23,10 @@ pub async fn mw_ctx_require(
 ) -> Result<Response, CtxExtError> {
     dbg!("{:<12} - mw_ctx_require - {ctx:?}", "MIDDLEWARE");
 
-    ctx_res?;
-
-    Ok(next.run(req).await)
+    match ctx_res {
+        Ok(_) => Ok(next.run(req).await),
+        Err(_) => Ok(Redirect::to("/login").into_response()),
+    }
 }
 
 pub async fn mw_ctx_resolver(
