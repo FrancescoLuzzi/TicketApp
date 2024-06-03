@@ -16,6 +16,7 @@ use ticket_app::{
     configuration::load_settings,
     routes::{health_check, home, index, login, logout, signup, ticket, validate},
     telemetry::{get_subscriber, init_subscriber},
+    migration::db_migration
 };
 use tower_cookies::CookieManagerLayer;
 use tower_http::services::ServeDir;
@@ -39,6 +40,7 @@ async fn main() {
         .await
         .unwrap();
     let db_pool = PgPoolOptions::new().connect_lazy_with(settings.database.with_db());
+    db_migration(&db_pool).await.expect("migration script failed");
     let app_state: SharedAppState = Arc::new(AppState {
         redis_pool,
         db_pool,

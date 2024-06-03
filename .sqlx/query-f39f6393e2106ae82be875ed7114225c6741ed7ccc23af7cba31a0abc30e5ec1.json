@@ -1,0 +1,68 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT \n            amt.direction as \"direction!: TicketDirection\",\n            amt.amount,\n            amt.description,\n            amt.created_at,\n            tt.name as type,\n            tt.id as \"type_id!: Uuid\",\n            tt.parent_id as \"parent_id!: Option<Uuid>\"\n        FROM accounting_movement_tbl amt\n          INNER JOIN tbl_type tt ON tt.id = amt.type_id\n          INNER JOIN tbl_accounting ta ON ta.id = amt.accounting_id\n        WHERE\n            ta.user_id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "direction!: TicketDirection",
+        "type_info": {
+          "Custom": {
+            "name": "movement_direction",
+            "kind": {
+              "Enum": [
+                "in",
+                "out"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "amount",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 2,
+        "name": "description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 4,
+        "name": "type",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "type_id!: Uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 6,
+        "name": "parent_id!: Option<Uuid>",
+        "type_info": "Uuid"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "f39f6393e2106ae82be875ed7114225c6741ed7ccc23af7cba31a0abc30e5ec1"
+}
