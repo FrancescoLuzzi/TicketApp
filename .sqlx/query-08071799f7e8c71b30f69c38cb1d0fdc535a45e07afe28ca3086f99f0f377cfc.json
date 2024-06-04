@@ -1,0 +1,29 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO accounting_movement_tbl(accounting_id,type_id,direction,amount,description,created_at)\n        SELECT id,$1,$2,$3,$4,$5\n        FROM tbl_accounting\n        WHERE\n          name = 'default' AND user_id=$6",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        {
+          "Custom": {
+            "name": "movement_direction",
+            "kind": {
+              "Enum": [
+                "in",
+                "out"
+              ]
+            }
+          }
+        },
+        "Numeric",
+        "Text",
+        "Timestamptz",
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "08071799f7e8c71b30f69c38cb1d0fdc535a45e07afe28ca3086f99f0f377cfc"
+}

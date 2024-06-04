@@ -11,11 +11,12 @@ use bb8_redis::bb8;
 use bb8_redis::RedisConnectionManager;
 use sqlx::postgres::PgPoolOptions;
 use ticket_app::{
-    app_state::AppState,
+    app_state::{AppState, SharedAppState},
     auth::mw_auth,
     configuration::load_settings,
-    routes::{health_check, home, index, login, logout, signup, validate},
+    routes::{health_check, home, index, login, logout, signup, ticket, validate},
     telemetry::{get_subscriber, init_subscriber},
+    migration::db_migration
 };
 use tower_cookies::CookieManagerLayer;
 use tower_http::services::ServeDir;
@@ -39,7 +40,8 @@ async fn main() {
         .await
         .unwrap();
     let db_pool = PgPoolOptions::new().connect_lazy_with(settings.database.with_db());
-    let app_state = Arc::new(AppState {
+    db_migration(&db_pool).await.expect("migration script failed");
+    let app_state: SharedAppState = Arc::new(AppState {
         redis_pool,
         db_pool,
         hmac_secret: settings.application.hmac_secret,
@@ -48,6 +50,9 @@ async fn main() {
     let serve_dir = ServeDir::new("dist");
 
     let app = Router::new()
+        .route("/ticket", get(ticket::get))
+        .route("/ticket", post(ticket::post))
+        .route_layer(middleware::from_fn(mw_auth::mw_ctx_require))
         .route("/home", get(home::get))
         .route("/logout", post(logout::post))
         .route("/login", get(login::get))

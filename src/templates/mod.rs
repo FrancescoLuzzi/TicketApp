@@ -1,7 +1,9 @@
 mod home;
 mod login;
 mod signup;
-pub use home::Home;
-pub use login::Login;
-pub use signup::Signup;
+mod ticket;
+pub use home::HomePage;
+pub use login::LoginPage;
+pub use signup::SignupPage;
+pub use ticket::TicketPage;
 pub mod validation;

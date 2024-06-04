@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO tbl_accounting (name, user_id, description) VALUES ('default', $1, 'your first tbl_accounting')",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "caddbfdf1dac23dd19490ed4c1754e422bd2ac1beb29a3d6865b35edefcfe348"
+}
