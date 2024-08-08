@@ -8,6 +8,17 @@ cargo install cargo-watch
 npm i
 ```
 
-## Integrate Leptos
+## Dev env
 
-[https://github.com/leptos-rs/leptos/tree/main/examples/login_with_token_csr_only](https://github.com/leptos-rs/leptos/tree/main/examples/login_with_token_csr_only)
+```bash
+# runs docker compose and launches migration
+./setup_dev_env.sh
+. db_env.sh
+```
+
+## Prod env
+
+```bash
+# app on http://localhost:80
+docker compose -f docker-compose.yaml -f docker-compose-prod.yaml up
+```

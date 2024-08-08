@@ -1,0 +1,12 @@
+FROM rust:1.80
+WORKDIR /app
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends openssl ca-certificates \
+    # Clean up
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/* && \
+    cargo install sqlx-cli --no-default-features --features native-tls,postgres
+COPY migrations migrations
+COPY images/migrate.sh migrate.sh
+ENTRYPOINT ["/bin/bash","./migrate.sh"]
