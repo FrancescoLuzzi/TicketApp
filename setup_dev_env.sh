@@ -7,9 +7,9 @@ POSTGRES_DB="ticket_app"
 POSTGRES_PORT=5432
 CACHE_PORT=6379
 
-DB_HOST="localhost"
+POSTGRES_HOST="localhost"
 
-export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 
 if [ ! -f "./db_env.sh" ];then
     echo << EOF
