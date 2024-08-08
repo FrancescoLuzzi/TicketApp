@@ -1,3 +1,13 @@
+database:
+  host: "127.0.0.1"
+  username: "user"
+  password: "password"
+  require_ssl: false
 application:
   host: 127.0.0.1
   base_url: "http://127.0.0.1"
+redis:
+  # username: user
+  # password: password
+  host: "127.0.0.1"
+  # database_number: 0

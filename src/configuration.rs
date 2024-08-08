@@ -31,7 +31,7 @@ pub struct DatabaseSettings {
     pub username: String,
     pub password: SecretString,
     pub port: u16,
-    pub host: IpAddr,
+    pub host: String,
     pub database_name: String,
     pub require_ssl: bool,
 }
@@ -44,7 +44,7 @@ impl DatabaseSettings {
             PgSslMode::Prefer
         };
         PgConnectOptions::new()
-            .host(&self.host.to_string())
+            .host(&self.host)
             .username(&self.username)
             .password(self.password.expose_secret())
             .port(self.port)
@@ -61,14 +61,14 @@ pub struct RedisSettings {
     pub username: Option<String>,
     pub password: Option<SecretString>,
     pub port: u16,
-    pub host: IpAddr,
+    pub host: String,
     pub database_number: Option<i64>,
 }
 
 impl RedisSettings {
     pub fn with_db(&self) -> redis::ConnectionInfo {
         redis::ConnectionInfo {
-            addr: redis::ConnectionAddr::Tcp(self.host.to_string(), self.port),
+            addr: redis::ConnectionAddr::Tcp(self.host.clone(), self.port),
             redis: redis::RedisConnectionInfo {
                 db: self.database_number.unwrap_or(0),
                 username: self.username.clone(),
@@ -202,16 +202,23 @@ pub fn load_settings() -> Result<Settings, ConfigError> {
 
     // Detect the running environment.
     // Default to `local` if unspecified.
-    let environment: Environment = std::env::var("APP_ENVIRONMENT")
+    let environment: Environment = std::env::var("APP__ENVIRONMENT")
         .unwrap_or_else(|_| "local".into())
         .try_into()
-        .expect("Failed to parse APP_ENVIRONMENT.");
+        .expect("Failed to parse APP__ENVIRONMENT.");
     let environment_filename = format!("{}.yaml", environment.as_str());
     let settings = Config::builder()
         .add_source(File::from(configuration_directory.join("base.yaml")))
         .add_source(File::from(
             configuration_directory.join(environment_filename),
         ))
+        // Add in settings from environment variables (with a prefix of APP and '__' as separator)
+        // E.g. `APP__APPLICATION_PORT=5001 would set `Settings.application.port`
+        .add_source(
+            config::Environment::with_prefix("APP")
+                .prefix_separator("__")
+                .separator("_"),
+        )
         .build()?;
 
     settings.try_deserialize::<Settings>()
