@@ -21,4 +21,6 @@ npm i
 ```bash
 # app on http://localhost:80
 docker compose -f docker-compose.yaml -f docker-compose-prod.yaml up
+# force recreate
+# docker compose -f docker-compose.yaml -f docker-compose-prod.yaml up --force-recreate --build
 ```
