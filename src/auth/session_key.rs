@@ -57,7 +57,7 @@ impl ToRedisArgs for SessionKey {
 }
 
 #[derive(Debug, Display, From)]
-#[display(fmt = "The provided string is not a valid session key")]
+#[display("The provided string is not a valid session key")]
 pub struct InvalidSessionKeyError(anyhow::Error);
 
 impl std::error::Error for InvalidSessionKeyError {

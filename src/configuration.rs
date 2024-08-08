@@ -1,5 +1,6 @@
 use bb8_redis::redis;
 use config::{Config, ConfigError, File};
+use redis::ProtocolVersion;
 use secrecy::{ExposeSecret, SecretString};
 use serde::Deserialize;
 use sqlx::postgres::{PgConnectOptions, PgSslMode};
@@ -62,7 +63,24 @@ pub struct RedisSettings {
     pub password: Option<SecretString>,
     pub port: u16,
     pub host: String,
+    #[serde(deserialize_with = "protocol_from_string")]
+    pub protocol: ProtocolVersion,
     pub database_number: Option<i64>,
+}
+
+fn protocol_from_string<'de, D>(deserializer: D) -> Result<ProtocolVersion, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let s: std::borrow::Cow<String> = Deserialize::deserialize(deserializer)?;
+    match s.as_str() {
+        "2" | "v2" | "resp2" => Ok(ProtocolVersion::RESP2),
+        "3" | "v3" | "resp3" => Ok(ProtocolVersion::RESP3),
+        default => Err(serde::de::Error::invalid_value(
+            serde::de::Unexpected::Str(default),
+            &r#""v3" or "v2" redis protocol version"#,
+        )),
+    }
 }
 
 impl RedisSettings {
@@ -71,6 +89,7 @@ impl RedisSettings {
             addr: redis::ConnectionAddr::Tcp(self.host.clone(), self.port),
             redis: redis::RedisConnectionInfo {
                 db: self.database_number.unwrap_or(0),
+                protocol: self.protocol,
                 username: self.username.clone(),
                 password: self.password.as_ref().map(|x| x.expose_secret().to_owned()),
             },

@@ -7,6 +7,7 @@ database:
   database_name: "ticket_app"
   require_ssl: false
 redis:
+  protocol: resp3
   port: 6379
 logging:
   dest: stdout
