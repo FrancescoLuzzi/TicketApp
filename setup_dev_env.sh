@@ -19,7 +19,7 @@ example ". db_env.sh"
 EOF
 fi
 
-echo "export DATABASE_URL=\"$DATABASE_URL\"" > db_env.sh
+echo "DATABASE_URL=$DATABASE_URL" > .env
 
 ask_to_close() {
     echo "dev environment already running"
