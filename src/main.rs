@@ -44,7 +44,7 @@ async fn main() {
     let app_state: SharedAppState = Arc::new(AppState {
         redis_pool,
         db_pool,
-        hmac_secret: settings.application.hmac_secret,
+        auth_secret: settings.application.auth_secret,
         base_url: settings.application.base_url,
     });
     let serve_dir = ServeDir::new("dist");

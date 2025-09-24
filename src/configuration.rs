@@ -24,7 +24,7 @@ pub struct ApplicationSettings {
     pub base_url: String,
     pub host: IpAddr,
     pub port: u16,
-    pub hmac_secret: SecretString,
+    pub auth_secret: SecretString,
 }
 
 #[derive(serde::Deserialize, Clone)]

@@ -13,6 +13,6 @@ pub type RedisConnection<'a> = PooledConnection<'a, RedisConnectionManager>;
 pub struct AppState {
     pub db_pool: PgPool,
     pub redis_pool: RedisPool,
-    pub hmac_secret: SecretString,
+    pub auth_secret: SecretString,
     pub base_url: String,
 }
